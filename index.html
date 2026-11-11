@@ -1,0 +1,518 @@
+<title>Luoghi della città</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root {
+  /* Layout: una colonna (max 520px), pensata per il telefono. Pulsanti blu come i cartelli stradali su fondo grigio chiaro. */
+  --bg: #EEF2F5;
+  --surface: #FFFFFF;
+  --ink: #12212F;
+  --muted: #52626F;
+  --line: #C5D0D9;
+  --sign: #0A5AA8;
+  --sign-ink: #FFFFFF;
+  --sel: #FFD84D;
+  --sel-ink: #12212F;
+  --ok: #1B8A4B;
+  --ok-bg: #D9F2E3;
+  --ok-ink: #0E6636;
+  --bad: #C62F2F;
+  --bad-bg: #FADCDC;
+  --bad-ink: #9E1B1B;
+  --font: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1923; --surface: #192631; --ink: #EDF2F6; --muted: #9FB2C1; --line: #2F4252;
+    --sign: #1B6DBF; --sign-ink: #FFFFFF; --sel: #FFD84D; --sel-ink: #12212F;
+    --ok: #4CC882; --ok-bg: #12351F; --ok-ink: #8CE8B0;
+    --bad: #FF7B7B; --bad-bg: #431B1B; --bad-ink: #FFA6A6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1923; --surface: #192631; --ink: #EDF2F6; --muted: #9FB2C1; --line: #2F4252;
+  --sign: #1B6DBF; --sign-ink: #FFFFFF; --sel: #FFD84D; --sel-ink: #12212F;
+  --ok: #4CC882; --ok-bg: #12351F; --ok-ink: #8CE8B0;
+  --bad: #FF7B7B; --bad-bg: #431B1B; --bad-ink: #FFA6A6;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 18px;
+  line-height: 1.35;
+  padding-block: 16px 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 520px; margin-inline: auto; display: flex; flex-direction: column; gap: 18px; }
+.top { display: flex; align-items: center; gap: 12px; }
+.top[hidden] { display: none; }
+.brand { min-width: 0; }
+.kicker { font-size: .8rem; letter-spacing: .14em; font-weight: 700; color: var(--muted); }
+h1 { margin: 0; font-size: 1.5rem; line-height: 1.1; text-transform: uppercase; text-wrap: balance; }
+h2 { margin: 0; font-size: 2.2rem; text-transform: uppercase; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
+
+/* Pulsanti */
+.btn, .tile, .chip, .icon-btn, .hear {
+  position: relative;
+  background: var(--surface);
+  border: 3px solid var(--line);
+  border-radius: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.btn { min-height: 64px; padding: 12px 18px; font-size: 1.25rem; }
+.btn.primary { background: var(--sign); border-color: var(--sign); color: var(--sign-ink); }
+.icon-btn { width: 56px; height: 56px; flex: none; font-size: 1.6rem; padding: 0; }
+.btn:disabled, .tile:disabled, .chip:disabled { cursor: default; }
+
+/* Menu in stile cartello */
+.menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.sign {
+  display: flex; align-items: center; gap: 16px; width: 100%; min-height: 84px; padding: 12px 20px;
+  background: var(--sign); color: var(--sign-ink);
+  border: 4px solid var(--sign); border-radius: 18px;
+  box-shadow: inset 0 0 0 3px var(--sign-ink);
+  font-size: 1.6rem; font-weight: 700; letter-spacing: .04em; text-align: left;
+}
+.sign .ico { font-size: 2.2rem; line-height: 1; }
+.sign .lbl { flex: 1; }
+.sign .arr { font-size: 1.6rem; }
+.sign.alt { background: var(--surface); color: var(--ink); border-color: var(--line); box-shadow: inset 0 0 0 3px var(--line); }
+.hint { margin: 0; text-align: center; color: var(--muted); font-weight: 700; }
+
+/* Esercizi */
+.act { display: flex; flex-direction: column; gap: 16px; }
+.dots { display: flex; gap: 10px; justify-content: center; }
+.dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--sign); background: transparent; }
+.dot.done { background: var(--sign); }
+.dot.cur { background: var(--sel); border-color: var(--sign); transform: scale(1.2); }
+.instr { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; text-transform: uppercase; }
+.instr .ii { font-size: 1.6rem; }
+.stage { display: flex; flex-direction: column; gap: 16px; min-height: 280px; }
+.msg { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 16px; font-size: 1.4rem; font-weight: 700; border: 3px solid transparent; }
+.msg.ok { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--ok); }
+.msg.bad { background: var(--bad-bg); color: var(--bad-ink); border-color: var(--bad); }
+.msg .mi { font-size: 1.6rem; }
+.foot { display: flex; flex-direction: column; gap: 12px; }
+.foot .btn[hidden] { display: none; }
+
+.emo { font-size: 2.6rem; line-height: 1; }
+.emo.big { font-size: 5rem; }
+
+/* Abbina */
+.pairs { display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px; }
+.col { display: grid; gap: 12px; align-content: start; }
+.tile { min-height: 80px; padding: 8px 10px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.15rem; }
+.tile .wd { overflow-wrap: anywhere; }
+.tile.sel { background: var(--sel); color: var(--sel-ink); border-color: var(--sel-ink); }
+
+/* Stati giusto / sbagliato */
+.tile.ok, .opt.ok, .chip.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-ink); opacity: 1; }
+.tile.bad, .opt.bad, .chip.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad-ink); opacity: 1; }
+.tile.ok::after, .opt.ok::after, .tile.bad::after, .opt.bad::after {
+  position: absolute; top: 4px; right: 10px; font-size: 1.1rem; font-weight: 700;
+}
+.tile.ok::after, .opt.ok::after { content: "✓"; color: var(--ok-ink); }
+.tile.bad::after, .opt.bad::after { content: "✕"; color: var(--bad-ink); }
+@media (prefers-reduced-motion: no-preference) {
+  .tile.bad, .opt.bad, .line.bad { animation: shake .35s; }
+}
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+/* Completa / Ascolta / Ordina */
+.pic { display: flex; align-items: center; justify-content: center; gap: 18px; }
+.hear { width: 64px; height: 64px; font-size: 1.7rem; padding: 0; background: var(--sign); border-color: var(--sign); color: var(--sign-ink); border-radius: 50%; }
+.hear.huge { width: 112px; height: 112px; font-size: 3rem; align-self: center; }
+.sent { margin: 0; text-align: center; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; text-wrap: balance; }
+.blank { display: inline-block; width: 4.5ch; border-bottom: 4px solid var(--ink); margin: 0 4px; }
+.fill { display: inline-block; padding: 0 8px; border-radius: 8px; background: var(--ok-bg); color: var(--ok-ink); border-bottom: 4px solid var(--ok); }
+.opts { display: grid; gap: 12px; }
+.opt { min-height: 68px; font-size: 1.4rem; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid2 .tile { min-height: 110px; }
+.grid2 .emo { font-size: 3.6rem; }
+.caption { min-height: 2rem; margin: 0; text-align: center; font-size: 1.3rem; font-weight: 700; text-transform: uppercase; color: var(--ok-ink); }
+
+.line { min-height: 84px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px; background: var(--surface); border: 3px dashed var(--line); border-radius: 16px; }
+.line.ok { border-style: solid; border-color: var(--ok); background: var(--ok-bg); }
+.line.bad { border-style: solid; border-color: var(--bad); background: var(--bad-bg); }
+.line .end { font-size: 1.6rem; font-weight: 700; }
+.bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 64px; }
+.chip { min-height: 56px; padding: 8px 14px; font-size: 1.25rem; }
+.check { align-self: stretch; }
+
+/* Parole */
+.words { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.words .tile { flex-direction: column; gap: 6px; min-height: 120px; }
+.words .emo { font-size: 3rem; }
+
+/* Fine */
+.done { display: flex; flex-direction: column; gap: 16px; align-items: stretch; text-align: center; padding-top: 24px; }
+.done .party { font-size: 5rem; line-height: 1; }
+.done p { margin: 0; font-size: 1.4rem; font-weight: 700; }
+
+.note { margin: 0; text-align: center; font-weight: 700; color: var(--bad-ink); }
+.note[hidden] { display: none; }
+</style>
+
+<div class="wrap" lang="it">
+  <header class="top" id="top" hidden>
+    <button class="icon-btn" id="homeBtn" aria-label="Menu">🏠</button>
+    <div class="brand">
+      <div class="kicker">ITALIANO · A1</div>
+      <h1>I luoghi della città</h1>
+    </div>
+  </header>
+  <main id="app"></main>
+  <p class="note" id="audioNote" hidden>🔇 Audio non disponibile</p>
+</div>
+
+<script>
+(function () {
+  var PLACES = [
+    { id: 'scuola', e: '🏫', a: 'LA', w: 'SCUOLA', blank: 'Gli studenti vanno a ___.', say: 'Gli studenti vanno a scuola.' },
+    { id: 'ospedale', e: '🏥', a: "L'", w: 'OSPEDALE', blank: "Il dottore lavora all'___.", say: "Il dottore lavora all'ospedale." },
+    { id: 'farmacia', e: '💊', a: 'LA', w: 'FARMACIA', blank: 'Compro le medicine in ___.', say: 'Compro le medicine in farmacia.' },
+    { id: 'supermercato', e: '🛒', a: 'IL', w: 'SUPERMERCATO', blank: 'Compro il pane al ___.', say: 'Compro il pane al supermercato.' },
+    { id: 'banca', e: '🏦', a: 'LA', w: 'BANCA', blank: 'Ritiro i soldi in ___.', say: 'Ritiro i soldi in banca.' },
+    { id: 'posta', e: '📮', a: 'LA', w: 'POSTA', blank: 'Spedisco una lettera alla ___.', say: 'Spedisco una lettera alla posta.' },
+    { id: 'stazione', e: '🚉', a: 'LA', w: 'STAZIONE', blank: 'Il treno arriva alla ___.', say: 'Il treno arriva alla stazione.' },
+    { id: 'parco', e: '🌳', a: 'IL', w: 'PARCO', blank: 'I bambini giocano nel ___.', say: 'I bambini giocano nel parco.' },
+    { id: 'bar', e: '☕', a: 'IL', w: 'BAR', blank: 'Bevo un caffè al ___.', say: 'Bevo un caffè al bar.', no: ['ristorante'] },
+    { id: 'ristorante', e: '🍽️', a: 'IL', w: 'RISTORANTE', blank: 'Mangio la pizza al ___.', say: 'Mangio la pizza al ristorante.', no: ['bar'] }
+  ];
+  var SENTS = [
+    { e: '🏫', w: ['IO', 'VADO', 'A', 'SCUOLA'], end: '.', say: 'Io vado a scuola.' },
+    { e: '🌳', w: ['IO', 'VADO', 'AL', 'PARCO'], end: '.', say: 'Io vado al parco.' },
+    { e: '🏦', w: ['IO', 'VADO', 'IN', 'BANCA'], end: '.', say: 'Io vado in banca.' },
+    { e: '🚉', w: ["DOV'È", 'LA', 'STAZIONE'], end: '?', say: "Dov'è la stazione?" },
+    { e: '📮', w: ['LA', 'POSTA', 'È', 'QUI'], end: '.', say: 'La posta è qui.' },
+    { e: '☕', w: ['IL', 'BAR', 'È', 'A', 'DESTRA'], end: '.', say: 'Il bar è a destra.' },
+    { e: '💊', w: ['LA', 'FARMACIA', 'È', 'A', 'SINISTRA'], end: '.', say: 'La farmacia è a sinistra.' },
+    { e: '🏥', w: ["L'OSPEDALE", 'È', 'QUI'], end: '.', say: "L'ospedale è qui." },
+    { e: '🍽️', w: ['IL', 'RISTORANTE', 'È', 'QUI'], end: '.', say: 'Il ristorante è qui.' }
+  ];
+  var OK = ['BRAVO!', 'MOLTO BENE!', 'GIUSTO!', 'PERFETTO!', 'OTTIMO!'];
+  var BAD = ['RIPROVA!', 'QUASI! RIPROVA!', 'ANCORA UNA VOLTA!'];
+
+  var byId = {};
+  PLACES.forEach(function (p) { byId[p.id] = p; });
+  var app = document.getElementById('app');
+  var topBar = document.getElementById('top');
+  var S = { mode: null, i: 0, n: 0 };
+
+  function label(p) { return p.a + (p.a.slice(-1) === "'" ? '' : ' ') + p.w; }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
+  function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function shuffle(a) {
+    a = a.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function distract(p, k) {
+    return shuffle(PLACES.filter(function (x) {
+      return x.id !== p.id && (p.no || []).indexOf(x.id) < 0;
+    })).slice(0, k);
+  }
+
+  /* Audio: voce italiana del telefono */
+  function speak(text) {
+    try {
+      if (!('speechSynthesis' in window)) { document.getElementById('audioNote').hidden = false; return; }
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'it-IT';
+      u.rate = 0.8;
+      var voices = window.speechSynthesis.getVoices() || [];
+      for (var k = 0; k < voices.length; k++) {
+        if (voices[k].lang && voices[k].lang.toLowerCase().indexOf('it') === 0) { u.voice = voices[k]; break; }
+      }
+      window.speechSynthesis.speak(u);
+    } catch (err) {
+      document.getElementById('audioNote').hidden = false;
+    }
+  }
+
+  function msg(kind, text) {
+    var m = document.getElementById('msg');
+    if (!m) return;
+    m.className = 'msg' + (kind ? ' ' + kind : '');
+    m.innerHTML = kind ? '<span class="mi" aria-hidden="true">' + (kind === 'ok' ? '✓' : '✕') + '</span>' + text : '';
+  }
+  function showNext() {
+    var b = document.getElementById('nextBtn');
+    if (b) { b.hidden = false; }
+  }
+  function stage() { return document.getElementById('stage'); }
+  function top() { try { window.scrollTo(0, 0); } catch (e) {} }
+
+  function shell(icon, text) {
+    var dots = '';
+    for (var i = 0; i < S.n; i++) {
+      dots += '<i class="dot' + (i < S.i ? ' done' : '') + (i === S.i ? ' cur' : '') + '"></i>';
+    }
+    return '<section class="act">' +
+      '<div class="dots" aria-hidden="true">' + dots + '</div>' +
+      '<p class="instr"><span class="ii" aria-hidden="true">' + icon + '</span><span>' + text + '</span></p>' +
+      '<div id="stage" class="stage"></div>' +
+      '<div id="msg" class="msg" role="status" aria-live="polite"></div>' +
+      '<div class="foot"><button class="btn primary" id="nextBtn" data-a="next" hidden>AVANTI ➜</button></div>' +
+      '</section>';
+  }
+
+  /* Schermate */
+  function showHome() {
+    topBar.hidden = true;
+    S.mode = null;
+    app.innerHTML =
+      '<div class="brand" style="margin-bottom:4px"><div class="kicker">ITALIANO · A1</div><h1 style="font-size:2rem">I luoghi della città</h1></div>' +
+      '<ul class="menu">' +
+      '<li><button class="sign alt" data-a="words"><span class="ico">📖</span><span class="lbl">PAROLE</span><span class="arr">➜</span></button></li>' +
+      '<li><button class="sign" data-a="start" data-m="match"><span class="ico">🔗</span><span class="lbl">ABBINA</span><span class="arr">➜</span></button></li>' +
+      '<li><button class="sign" data-a="start" data-m="completa"><span class="ico">✏️</span><span class="lbl">COMPLETA</span><span class="arr">➜</span></button></li>' +
+      '<li><button class="sign" data-a="start" data-m="ordina"><span class="ico">🔀</span><span class="lbl">ORDINA</span><span class="arr">➜</span></button></li>' +
+      '<li><button class="sign" data-a="start" data-m="ascolta"><span class="ico">🎧</span><span class="lbl">ASCOLTA</span><span class="arr">➜</span></button></li>' +
+      '</ul>' +
+      '<p class="hint">🔊 Alza il volume</p>';
+    top();
+  }
+
+  function showWords() {
+    topBar.hidden = false;
+    S.mode = 'words';
+    app.innerHTML =
+      '<section class="act"><p class="instr"><span class="ii" aria-hidden="true">👆</span><span>TOCCA E ASCOLTA</span></p>' +
+      '<div class="words">' + PLACES.map(function (p) {
+        return '<button class="tile" data-a="wpick" data-id="' + p.id + '"><span class="emo">' + p.e + '</span><span>' + label(p) + '</span></button>';
+      }).join('') + '</div></section>';
+    top();
+  }
+
+  function startMode(m) {
+    topBar.hidden = false;
+    S.mode = m; S.i = 0;
+    if (m === 'match') {
+      var ps = shuffle(PLACES).slice(0, 8);
+      S.rounds = [ps.slice(0, 4), ps.slice(4, 8)];
+      S.n = 2;
+    } else if (m === 'completa') {
+      S.qs = shuffle(PLACES).slice(0, 6).map(function (p) {
+        return { p: p, opts: shuffle([p].concat(distract(p, 2))) };
+      });
+      S.n = 6;
+    } else if (m === 'ordina') {
+      S.qs = shuffle(SENTS).slice(0, 6);
+      S.n = 6;
+    } else {
+      S.qs = shuffle(PLACES).slice(0, 6).map(function (p, i) {
+        return { p: p, type: (i % 3 === 2) ? 's' : 'w', opts: shuffle([p].concat(distract(p, 3))) };
+      });
+      S.n = 6;
+    }
+    showQ();
+  }
+
+  function showQ() {
+    if (S.i >= S.n) { showDone(); return; }
+    ({ match: showMatch, completa: showCompleta, ordina: showOrdina, ascolta: showAscolta })[S.mode]();
+    top();
+  }
+
+  function showDone() {
+    app.innerHTML =
+      '<section class="done"><div class="party" aria-hidden="true">🎉</div><h2>BRAVO!</h2><p>HAI FINITO!</p>' +
+      '<div class="foot"><button class="btn primary" data-a="start" data-m="' + S.mode + '">🔁 ANCORA</button>' +
+      '<button class="btn" data-a="home">🏠 MENU</button></div></section>';
+    top();
+  }
+
+  /* ABBINA */
+  function showMatch() {
+    var ps = S.rounds[S.i];
+    S.m = { ps: ps, L: shuffle(ps), R: shuffle(ps), done: {}, count: 0, l: null, r: null, bad: false, lock: false };
+    app.innerHTML = shell('👆', "TOCCA L'IMMAGINE. TOCCA LA PAROLA.");
+    paintMatch();
+  }
+  function paintMatch() {
+    var m = S.m;
+    function tile(side, p) {
+      var d = !!m.done[p.id];
+      var sel = (side === 'l' ? m.l : m.r) === p.id;
+      var cls = 'tile' + (d ? ' ok' : (sel ? (m.bad ? ' bad' : ' sel') : ''));
+      var inner = side === 'l' ? '<span class="emo">' + p.e + '</span>' : '<span class="wd">' + label(p) + '</span>';
+      return '<button class="' + cls + '" data-a="mpick" data-side="' + side + '" data-id="' + p.id + '"' + (d ? ' disabled' : '') + '>' + inner + '</button>';
+    }
+    stage().innerHTML = '<div class="pairs"><div class="col">' + m.L.map(function (p) { return tile('l', p); }).join('') +
+      '</div><div class="col">' + m.R.map(function (p) { return tile('r', p); }).join('') + '</div></div>';
+  }
+  function matchPick(b) {
+    var m = S.m;
+    if (m.lock) return;
+    var side = b.dataset.side, id = b.dataset.id;
+    speak(label(byId[id]).toLowerCase());
+    m[side] = (m[side] === id) ? null : id;
+    msg('', '');
+    if (m.l && m.r) {
+      if (m.l === m.r) {
+        m.done[m.l] = true; m.count++; m.l = null; m.r = null;
+        paintMatch();
+        msg('ok', rnd(OK));
+        if (m.count === m.ps.length) showNext();
+      } else {
+        m.bad = true; m.lock = true;
+        paintMatch();
+        msg('bad', rnd(BAD));
+        setTimeout(function () { m.l = null; m.r = null; m.bad = false; m.lock = false; paintMatch(); }, 900);
+      }
+    } else {
+      paintMatch();
+    }
+  }
+
+  /* COMPLETA */
+  function showCompleta() {
+    S.c = { q: S.qs[S.i], wrong: {}, solved: false };
+    app.innerHTML = shell('👆', 'SCEGLI LA PAROLA.');
+    paintCompleta();
+  }
+  function paintCompleta() {
+    var c = S.c, q = c.q;
+    var parts = q.p.blank.split('___');
+    var blank = c.solved ? '<span class="fill">' + q.p.w + '</span>' : '<span class="blank"></span>';
+    stage().innerHTML =
+      '<div class="pic"><span class="emo big" aria-hidden="true">' + q.p.e + '</span>' +
+      '<button class="hear" data-a="hear" data-say="' + esc(q.p.say) + '" aria-label="Ascolta">🔊</button></div>' +
+      '<p class="sent">' + parts[0] + blank + parts[1] + '</p>' +
+      '<div class="opts">' + q.opts.map(function (o) {
+        var w = !!c.wrong[o.id], ok = c.solved && o.id === q.p.id;
+        return '<button class="btn opt' + (w ? ' bad' : '') + (ok ? ' ok' : '') + '" data-a="cpick" data-id="' + o.id + '"' + ((w || c.solved) ? ' disabled' : '') + '>' + o.w + '</button>';
+      }).join('') + '</div>';
+  }
+  function completaPick(b) {
+    var c = S.c;
+    if (c.solved) return;
+    if (b.dataset.id === c.q.p.id) {
+      c.solved = true; paintCompleta(); speak(c.q.p.say); msg('ok', rnd(OK)); showNext();
+    } else {
+      c.wrong[b.dataset.id] = true; paintCompleta(); msg('bad', rnd(BAD));
+    }
+  }
+
+  /* ORDINA */
+  function showOrdina() {
+    var s = S.qs[S.i];
+    S.o = { s: s, chips: shuffle(s.w.map(function (w, i) { return { id: i, w: w }; })), placed: [], state: '' };
+    app.innerHTML = shell('👆', 'METTI LE PAROLE IN ORDINE.');
+    paintOrdina();
+  }
+  function paintOrdina() {
+    var o = S.o;
+    var pl = o.placed.map(function (id) { return o.chips.filter(function (c) { return c.id === id; })[0]; });
+    var free = o.chips.filter(function (c) { return o.placed.indexOf(c.id) < 0; });
+    var full = o.placed.length === o.chips.length;
+    stage().innerHTML =
+      '<div class="pic"><span class="emo big" aria-hidden="true">' + o.s.e + '</span>' +
+      '<button class="hear" data-a="hear" data-say="' + esc(o.s.say) + '" aria-label="Ascolta">🔊</button></div>' +
+      '<div class="line' + (o.state ? ' ' + o.state : '') + '">' +
+      pl.map(function (c) {
+        return '<button class="chip' + (o.state ? ' ' + o.state : '') + '" data-a="oun" data-id="' + c.id + '"' + (o.state === 'ok' ? ' disabled' : '') + '>' + c.w + '</button>';
+      }).join('') + (pl.length ? '<span class="end">' + o.s.end + '</span>' : '') + '</div>' +
+      '<div class="bank">' + free.map(function (c) {
+        return '<button class="chip" data-a="oadd" data-id="' + c.id + '">' + c.w + '</button>';
+      }).join('') + '</div>' +
+      (full && o.state !== 'ok' ? '<button class="btn primary check" data-a="ocheck">✓ CONTROLLA</button>' : '');
+  }
+  function ordinaAdd(b) {
+    var o = S.o;
+    if (o.state === 'ok') return;
+    o.state = ''; msg('', '');
+    o.placed.push(parseInt(b.dataset.id, 10));
+    paintOrdina();
+  }
+  function ordinaRemove(b) {
+    var o = S.o;
+    if (o.state === 'ok') return;
+    o.state = ''; msg('', '');
+    var id = parseInt(b.dataset.id, 10);
+    o.placed = o.placed.filter(function (x) { return x !== id; });
+    paintOrdina();
+  }
+  function ordinaCheck() {
+    var o = S.o;
+    var right = o.placed.every(function (id, i) { return id === i; });
+    if (right) {
+      o.state = 'ok'; paintOrdina(); speak(o.s.say); msg('ok', rnd(OK)); showNext();
+    } else {
+      o.state = 'bad'; paintOrdina(); msg('bad', rnd(BAD));
+    }
+  }
+
+  /* ASCOLTA */
+  function sayText(q) { return q.type === 'w' ? label(q.p).toLowerCase() : q.p.say; }
+  function showAscolta() {
+    S.a = { q: S.qs[S.i], wrong: {}, solved: false };
+    app.innerHTML = shell('🔊', "ASCOLTA. TOCCA L'IMMAGINE.");
+    paintAscolta();
+    speak(sayText(S.a.q));
+  }
+  function paintAscolta() {
+    var a = S.a, q = a.q;
+    stage().innerHTML =
+      '<button class="hear huge" data-a="hear" data-say="' + esc(sayText(q)) + '" aria-label="Ascolta">🔊</button>' +
+      '<p class="caption">' + (a.solved ? (q.type === 'w' ? label(q.p) : q.p.say) : '') + '</p>' +
+      '<div class="grid2">' + q.opts.map(function (o) {
+        var w = !!a.wrong[o.id], ok = a.solved && o.id === q.p.id;
+        return '<button class="tile opt' + (w ? ' bad' : '') + (ok ? ' ok' : '') + '" data-a="apick" data-id="' + o.id + '"' + ((w || a.solved) ? ' disabled' : '') + '><span class="emo" aria-hidden="true">' + o.e + '</span></button>';
+      }).join('') + '</div>';
+  }
+  function ascoltaPick(b) {
+    var a = S.a;
+    if (a.solved) return;
+    if (b.dataset.id === a.q.p.id) {
+      a.solved = true; paintAscolta(); msg('ok', rnd(OK)); showNext();
+    } else {
+      a.wrong[b.dataset.id] = true; paintAscolta(); msg('bad', rnd(BAD));
+    }
+  }
+
+  /* Eventi */
+  var H = {
+    start: function (b) { startMode(b.dataset.m); },
+    words: showWords,
+    home: showHome,
+    hear: function (b) { speak(b.dataset.say); },
+    next: function () { S.i++; showQ(); },
+    wpick: function (b) { speak(label(byId[b.dataset.id]).toLowerCase()); },
+    mpick: matchPick,
+    cpick: completaPick,
+    oadd: ordinaAdd,
+    oun: ordinaRemove,
+    ocheck: ordinaCheck,
+    apick: ascoltaPick
+  };
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-a]');
+    if (!b || b.disabled) return;
+    var f = H[b.dataset.a];
+    if (f) f(b);
+  });
+  document.getElementById('homeBtn').addEventListener('click', function () {
+    try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {}
+    showHome();
+  });
+  try { if ('speechSynthesis' in window) window.speechSynthesis.getVoices(); } catch (e) {}
+
+  showHome();
+})();
+</script>
