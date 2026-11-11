@@ -1,9 +1,16 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Esercizi di italiano A1 sui luoghi della città: abbina, completa, ordina, ascolta.">
 <title>Luoghi della città</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 :root {
-  /* Layout: una colonna (max 520px), pensata per il telefono. Pulsanti blu come i cartelli stradali su fondo grigio chiaro. */
+  /* Layout: una colonna pensata per il telefono (360px), barra dei messaggi fissa in basso sotto il pollice.
+     Pulsanti blu come i cartelli stradali su fondo grigio chiaro. */
   --bg: #EEF2F5;
   --surface: #FFFFFF;
   --ink: #12212F;
@@ -20,6 +27,7 @@
   --bad-bg: #FADCDC;
   --bad-ink: #9E1B1B;
   --font: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -39,27 +47,39 @@
 }
 
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
+  margin: 0;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
   font-size: 18px;
-  line-height: 1.35;
-  padding-block: 16px 32px;
+  line-height: 1.3;
+  padding-top: max(12px, env(safe-area-inset-top, 0px));
+  padding-bottom: 0;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.wrap { max-width: 520px; margin-inline: auto; display: flex; flex-direction: column; gap: 18px; }
+.wrap {
+  max-width: 520px;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: calc(100vh - 12px);
+  min-height: calc(100dvh - 12px);
+}
+main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .top { display: flex; align-items: center; gap: 12px; }
 .top[hidden] { display: none; }
 .brand { min-width: 0; }
-.kicker { font-size: .8rem; letter-spacing: .14em; font-weight: 700; color: var(--muted); }
-h1 { margin: 0; font-size: 1.5rem; line-height: 1.1; text-transform: uppercase; text-wrap: balance; }
+.kicker { font-size: .75rem; letter-spacing: .14em; font-weight: 700; color: var(--muted); }
+h1 { margin: 0; font-size: 1.15rem; line-height: 1.1; text-transform: uppercase; text-wrap: balance; }
+h1.big { font-size: clamp(1.6rem, 7.5vw, 2.1rem); }
 h2 { margin: 0; font-size: 2.2rem; text-transform: uppercase; }
-button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+button { font: inherit; color: inherit; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
 
-/* Pulsanti */
 .btn, .tile, .chip, .icon-btn, .hear {
   position: relative;
   background: var(--surface);
@@ -68,102 +88,121 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
   font-weight: 700;
   text-transform: uppercase;
 }
-.btn { min-height: 64px; padding: 12px 18px; font-size: 1.25rem; }
+.btn { min-height: 60px; padding: 10px 16px; font-size: 1.2rem; }
 .btn.primary { background: var(--sign); border-color: var(--sign); color: var(--sign-ink); }
-.icon-btn { width: 56px; height: 56px; flex: none; font-size: 1.6rem; padding: 0; }
+.icon-btn { width: 52px; height: 52px; flex: none; font-size: 1.5rem; padding: 0; }
 .btn:disabled, .tile:disabled, .chip:disabled { cursor: default; }
 
 /* Menu in stile cartello */
-.menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.menu { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .sign {
-  display: flex; align-items: center; gap: 16px; width: 100%; min-height: 84px; padding: 12px 20px;
+  display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 10px 18px;
   background: var(--sign); color: var(--sign-ink);
   border: 4px solid var(--sign); border-radius: 18px;
   box-shadow: inset 0 0 0 3px var(--sign-ink);
-  font-size: 1.6rem; font-weight: 700; letter-spacing: .04em; text-align: left;
+  font-size: 1.5rem; font-weight: 700; letter-spacing: .04em; text-align: left;
 }
-.sign .ico { font-size: 2.2rem; line-height: 1; }
+.sign .ico { font-size: 2rem; line-height: 1; }
 .sign .lbl { flex: 1; }
-.sign .arr { font-size: 1.6rem; }
+.sign .arr { font-size: 1.5rem; }
 .sign.alt { background: var(--surface); color: var(--ink); border-color: var(--line); box-shadow: inset 0 0 0 3px var(--line); }
 .hint { margin: 0; text-align: center; color: var(--muted); font-weight: 700; }
 
 /* Esercizi */
-.act { display: flex; flex-direction: column; gap: 16px; }
+.act { flex: 1; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .dots { display: flex; gap: 10px; justify-content: center; }
-.dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid var(--sign); background: transparent; }
+.dot { width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--sign); background: transparent; }
 .dot.done { background: var(--sign); }
-.dot.cur { background: var(--sel); border-color: var(--sign); transform: scale(1.2); }
-.instr { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; text-transform: uppercase; }
-.instr .ii { font-size: 1.6rem; }
-.stage { display: flex; flex-direction: column; gap: 16px; min-height: 280px; }
-.msg { min-height: 56px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 16px; font-size: 1.4rem; font-weight: 700; border: 3px solid transparent; }
+.dot.cur { background: var(--sel); transform: scale(1.2); }
+.instr { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 700; text-transform: uppercase; line-height: 1.15; }
+.instr .ii { font-size: 1.5rem; }
+.stage { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* Barra in basso: messaggio + avanti */
+.dock {
+  position: sticky; bottom: 0; z-index: 5; margin-top: auto;
+  display: flex; gap: 10px; align-items: stretch;
+  padding-top: 10px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  background: var(--bg);
+}
+.msg {
+  flex: 1 1 0; min-width: 0; min-height: 60px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: 16px; border: 3px solid transparent;
+  font-size: 1.15rem; line-height: 1.1; font-weight: 700; text-align: center;
+}
 .msg.ok { background: var(--ok-bg); color: var(--ok-ink); border-color: var(--ok); }
 .msg.bad { background: var(--bad-bg); color: var(--bad-ink); border-color: var(--bad); }
-.msg .mi { font-size: 1.6rem; }
-.foot { display: flex; flex-direction: column; gap: 12px; }
-.foot .btn[hidden] { display: none; }
+.msg .mi { font-size: 1.4rem; }
+.dock .btn { flex: 0 0 auto; min-height: 60px; }
+.dock .btn[hidden] { display: none; }
 
-.emo { font-size: 2.6rem; line-height: 1; }
-.emo.big { font-size: 5rem; }
+/* Disegni */
+.pic { display: block; width: 100%; height: auto; border-radius: 12px; }
 
-/* Abbina */
-.pairs { display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px; }
+/* Abbina: 3 coppie per turno */
+.pairs { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 12px; }
 .col { display: grid; gap: 12px; align-content: start; }
-.tile { min-height: 80px; padding: 8px 10px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 1.15rem; }
-.tile .wd { overflow-wrap: anywhere; }
-.tile.sel { background: var(--sel); color: var(--sel-ink); border-color: var(--sel-ink); }
+.tile { min-height: 84px; padding: 6px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: clamp(.95rem, 4.6vw, 1.2rem); }
+.tile .wd { padding: 0 4px; }
+.tile .im { display: block; width: 100%; }
+.tile.sel { background: var(--sel); color: var(--sel-ink); border-color: var(--sel-ink); box-shadow: 0 0 0 3px var(--sel); }
 
-/* Stati giusto / sbagliato */
+/* Giusto / sbagliato */
 .tile.ok, .opt.ok, .chip.ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok-ink); opacity: 1; }
 .tile.bad, .opt.bad, .chip.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad-ink); opacity: 1; }
 .tile.ok::after, .opt.ok::after, .tile.bad::after, .opt.bad::after {
-  position: absolute; top: 4px; right: 10px; font-size: 1.1rem; font-weight: 700;
+  position: absolute; top: 4px; right: 8px; width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; font-weight: 700; color: #fff;
 }
-.tile.ok::after, .opt.ok::after { content: "✓"; color: var(--ok-ink); }
-.tile.bad::after, .opt.bad::after { content: "✕"; color: var(--bad-ink); }
+.tile.ok::after, .opt.ok::after { content: "✓"; background: var(--ok); }
+.tile.bad::after, .opt.bad::after { content: "✕"; background: var(--bad); }
 @media (prefers-reduced-motion: no-preference) {
   .tile.bad, .opt.bad, .line.bad { animation: shake .35s; }
 }
 @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 
-/* Completa / Ascolta / Ordina */
-.pic { display: flex; align-items: center; justify-content: center; gap: 18px; }
-.hear { width: 64px; height: 64px; font-size: 1.7rem; padding: 0; background: var(--sign); border-color: var(--sign); color: var(--sign-ink); border-radius: 50%; }
-.hear.huge { width: 112px; height: 112px; font-size: 3rem; align-self: center; }
-.sent { margin: 0; text-align: center; font-size: 1.5rem; font-weight: 700; text-transform: uppercase; text-wrap: balance; }
+/* Completa / Ordina / Ascolta */
+.hero { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.hero .pic { width: min(220px, 60vw); }
+.hero.small .pic { width: min(170px, 46vw); }
+.hear { width: 60px; height: 60px; flex: none; font-size: 1.6rem; padding: 0; background: var(--sign); border-color: var(--sign); color: var(--sign-ink); border-radius: 50%; }
+.hear.huge { width: 88px; height: 88px; font-size: 2.4rem; align-self: center; }
+.sent { margin: 0; text-align: center; font-size: clamp(1.25rem, 5.8vw, 1.5rem); font-weight: 700; text-transform: uppercase; text-wrap: balance; }
 .blank { display: inline-block; width: 4.5ch; border-bottom: 4px solid var(--ink); margin: 0 4px; }
 .fill { display: inline-block; padding: 0 8px; border-radius: 8px; background: var(--ok-bg); color: var(--ok-ink); border-bottom: 4px solid var(--ok); }
-.opts { display: grid; gap: 12px; }
-.opt { min-height: 68px; font-size: 1.4rem; }
+.opts { display: grid; gap: 10px; }
+.opt { min-height: 62px; font-size: 1.3rem; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.grid2 .tile { min-height: 110px; }
-.grid2 .emo { font-size: 3.6rem; }
-.caption { min-height: 2rem; margin: 0; text-align: center; font-size: 1.3rem; font-weight: 700; text-transform: uppercase; color: var(--ok-ink); }
+.grid2 .tile { padding: 6px; }
+.caption { min-height: 1.5rem; margin: 0; text-align: center; font-size: 1.2rem; font-weight: 700; text-transform: uppercase; color: var(--ok-ink); }
 
-.line { min-height: 84px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px; background: var(--surface); border: 3px dashed var(--line); border-radius: 16px; }
+.line { min-height: 76px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px; background: var(--surface); border: 3px dashed var(--line); border-radius: 16px; }
 .line.ok { border-style: solid; border-color: var(--ok); background: var(--ok-bg); }
 .line.bad { border-style: solid; border-color: var(--bad); background: var(--bad-bg); }
-.line .end { font-size: 1.6rem; font-weight: 700; }
-.bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 64px; }
-.chip { min-height: 56px; padding: 8px 14px; font-size: 1.25rem; }
+.line .end { font-size: 1.5rem; font-weight: 700; }
+.bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 60px; }
+.chip { min-height: 54px; padding: 8px 14px; font-size: clamp(1.05rem, 5vw, 1.25rem); }
 .check { align-self: stretch; }
 
 /* Parole */
 .words { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.words .tile { flex-direction: column; gap: 6px; min-height: 120px; }
-.words .emo { font-size: 3rem; }
+.words .tile { flex-direction: column; gap: 6px; padding: 6px 6px 10px; }
 
 /* Fine */
-.done { display: flex; flex-direction: column; gap: 16px; align-items: stretch; text-align: center; padding-top: 24px; }
+.done { display: flex; flex-direction: column; gap: 16px; text-align: center; padding-top: 24px; }
 .done .party { font-size: 5rem; line-height: 1; }
 .done p { margin: 0; font-size: 1.4rem; font-weight: 700; }
+.done .btns { display: flex; flex-direction: column; gap: 12px; }
 
-.note { margin: 0; text-align: center; font-weight: 700; color: var(--bad-ink); }
+.note { margin: 0 0 12px; text-align: center; font-weight: 700; color: var(--bad-ink); }
 .note[hidden] { display: none; }
 </style>
-
-<div class="wrap" lang="it">
+</head>
+<body>
+<div class="wrap">
   <header class="top" id="top" hidden>
     <button class="icon-btn" id="homeBtn" aria-label="Menu">🏠</button>
     <div class="brand">
@@ -177,31 +216,178 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
 
 <script>
 (function () {
+  /* ---------- Disegni (SVG, stile piatto, senza scritte) ---------- */
+  var SKY = '<rect width="120" height="100" fill="#DCEBF7"/>';
+  var GND = '<rect y="82" width="120" height="18" fill="#C4CBD4"/>';
+  function svg(inner) {
+    return '<svg class="pic" viewBox="0 0 120 100" aria-hidden="true" focusable="false">' + inner + '</svg>';
+  }
+  function stripes(x, y, w, h, n, a, b) {
+    var s = '', sw = w / n;
+    for (var i = 0; i < n; i++) {
+      s += '<rect x="' + (x + i * sw) + '" y="' + y + '" width="' + sw + '" height="' + h + '" fill="' + (i % 2 ? b : a) + '"/>';
+    }
+    return s;
+  }
+  var DARK = '#263747';
+  var IMG = {
+    scuola: svg(SKY + GND +
+      '<circle cx="11" cy="76" r="9" fill="#4FA35C"/><circle cx="109" cy="76" r="9" fill="#4FA35C"/>' +
+      '<rect x="59" y="3" width="2" height="14" fill="' + DARK + '"/>' +
+      '<rect x="61" y="3" width="4" height="7" fill="#2E9E5B"/><rect x="65" y="3" width="4" height="7" fill="#FFFFFF"/><rect x="69" y="3" width="4" height="7" fill="#D64545"/>' +
+      '<rect x="20" y="38" width="80" height="44" fill="#E9A98B"/>' +
+      '<polygon points="14,38 60,16 106,38" fill="#B5533C"/>' +
+      '<circle cx="60" cy="31" r="8" fill="#F2B632"/>' +
+      '<path d="M52.5 28.5Q56 27 60 28.5V35.5Q56 34 52.5 35.5Z" fill="#fff" stroke="' + DARK + '" stroke-width="1"/>' +
+      '<path d="M60 28.5Q64 27 67.5 28.5V35.5Q64 34 60 35.5Z" fill="#fff" stroke="' + DARK + '" stroke-width="1"/>' +
+      '<rect x="27" y="48" width="16" height="16" fill="#fff"/><path d="M35 48v16M27 56h16" stroke="#3E6C8F" stroke-width="1.5"/>' +
+      '<rect x="77" y="48" width="16" height="16" fill="#fff"/><path d="M85 48v16M77 56h16" stroke="#3E6C8F" stroke-width="1.5"/>' +
+      '<rect x="52" y="56" width="16" height="26" fill="#3E6C8F"/>' +
+      '<rect x="46" y="78" width="28" height="4" fill="#CFC6B8"/>'),
+
+    ospedale: svg(SKY + GND +
+      '<rect x="16" y="28" width="88" height="54" fill="#F7F1E3"/>' +
+      '<rect x="16" y="28" width="88" height="5" fill="#C9D3DC"/>' +
+      '<rect x="22" y="40" width="10" height="10" fill="#BEE0F0"/><rect x="36" y="40" width="10" height="10" fill="#BEE0F0"/>' +
+      '<rect x="74" y="40" width="10" height="10" fill="#BEE0F0"/><rect x="88" y="40" width="10" height="10" fill="#BEE0F0"/>' +
+      '<rect x="22" y="58" width="10" height="10" fill="#BEE0F0"/><rect x="36" y="58" width="10" height="10" fill="#BEE0F0"/>' +
+      '<rect x="74" y="58" width="10" height="10" fill="#BEE0F0"/><rect x="88" y="58" width="10" height="10" fill="#BEE0F0"/>' +
+      '<rect x="46" y="8" width="28" height="28" rx="4" fill="#2A6FB8" stroke="#fff" stroke-width="2"/>' +
+      '<rect x="53" y="14" width="4" height="16" fill="#fff"/><rect x="63" y="14" width="4" height="16" fill="#fff"/><rect x="53" y="20.5" width="14" height="3.5" fill="#fff"/>' +
+      '<rect x="50" y="60" width="20" height="22" fill="#BEE0F0" stroke="' + DARK + '" stroke-width="1.5"/><path d="M60 60v22" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<rect x="46" y="54" width="28" height="5" fill="#2A6FB8"/>'),
+
+    farmacia: svg(SKY + GND +
+      '<rect x="12" y="36" width="96" height="46" fill="#F7F1E3"/>' +
+      '<rect x="12" y="36" width="96" height="9" fill="#2E9E5B"/>' +
+      '<rect x="58" y="30" width="4" height="8" fill="' + DARK + '"/>' +
+      '<rect x="54" y="4" width="12" height="28" rx="1.5" fill="#2E9E5B"/><rect x="46" y="12" width="28" height="12" rx="1.5" fill="#2E9E5B"/>' +
+      '<rect x="20" y="52" width="42" height="24" fill="#BEE0F0" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<rect x="25" y="60" width="6" height="14" fill="#D64545"/><rect x="34" y="63" width="6" height="11" fill="#F2B632"/><rect x="43" y="58" width="6" height="16" fill="#2E9E5B"/><rect x="52" y="62" width="6" height="12" fill="#2A6FB8"/>' +
+      '<path d="M21 74h40" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<rect x="72" y="50" width="28" height="32" fill="#BEE0F0" stroke="' + DARK + '" stroke-width="1.5"/><path d="M86 50v32" stroke="' + DARK + '" stroke-width="1.5"/>'),
+
+    supermercato: svg(SKY + GND +
+      '<rect x="8" y="22" width="104" height="18" fill="#F2B632"/>' +
+      '<polyline points="50,26 54,26 57,35 71,35 74,29 56,29" fill="none" stroke="' + DARK + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="59" cy="38" r="1.6" fill="' + DARK + '"/><circle cx="69" cy="38" r="1.6" fill="' + DARK + '"/>' +
+      '<rect x="8" y="40" width="104" height="42" fill="#F7F1E3"/>' +
+      stripes(8, 40, 104, 8, 8, '#D64545', '#FFFFFF') +
+      '<rect x="46" y="54" width="28" height="28" fill="#BEE0F0" stroke="' + DARK + '" stroke-width="1.5"/><path d="M60 54v28" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<rect x="12" y="68" width="28" height="14" fill="#8B5E3C"/>' +
+      '<circle cx="19" cy="66" r="4.5" fill="#D64545"/><circle cx="27" cy="65" r="4.5" fill="#F28C28"/><circle cx="35" cy="66" r="4.5" fill="#4FA35C"/>' +
+      '<path d="M80 62h28l-4 13H84z" fill="#fff" fill-opacity=".6" stroke="' + DARK + '" stroke-width="2.4" stroke-linejoin="round"/>' +
+      '<path d="M88 62l1.5 13M96 62v13M104 62l-1.5 13" stroke="' + DARK + '" stroke-width="1.2"/>' +
+      '<path d="M80 62l-5-5h-6" fill="none" stroke="' + DARK + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<circle cx="87" cy="79.5" r="2.6" fill="' + DARK + '"/><circle cx="102" cy="79.5" r="2.6" fill="' + DARK + '"/>'),
+
+    banca: svg(SKY + GND +
+      '<polygon points="14,40 60,16 106,40" fill="#D8CFBD"/>' +
+      '<circle cx="60" cy="32" r="9" fill="#F2B632"/>' +
+      '<text x="60" y="37" font-size="13" font-weight="700" text-anchor="middle" fill="' + DARK + '" font-family="Arial, Helvetica, sans-serif">€</text>' +
+      '<rect x="14" y="40" width="92" height="5" fill="#C9BEA8"/>' +
+      '<rect x="16" y="45" width="88" height="31" fill="#E8E1D2"/>' +
+      '<rect x="52" y="56" width="16" height="20" fill="#3E6C8F"/><circle cx="64" cy="67" r="1.2" fill="#F2B632"/>' +
+      '<rect x="20" y="45" width="8" height="31" fill="#fff" stroke="#D8CFBD"/><rect x="36" y="45" width="8" height="31" fill="#fff" stroke="#D8CFBD"/>' +
+      '<rect x="76" y="45" width="8" height="31" fill="#fff" stroke="#D8CFBD"/><rect x="92" y="45" width="8" height="31" fill="#fff" stroke="#D8CFBD"/>' +
+      '<rect x="12" y="76" width="96" height="6" fill="#BDB29B"/>'),
+
+    posta: svg(SKY + GND +
+      '<rect x="8" y="30" width="78" height="5" fill="#B5533C"/>' +
+      '<rect x="10" y="35" width="74" height="47" fill="#F7F1E3"/>' +
+      '<rect x="10" y="35" width="74" height="14" fill="#F2B632"/>' +
+      '<rect x="37" y="37" width="20" height="10" rx="1" fill="#fff" stroke="' + DARK + '" stroke-width="1.2"/>' +
+      '<path d="M37.5 37.8L47 43L56.5 37.8" fill="none" stroke="' + DARK + '" stroke-width="1.2"/>' +
+      '<rect x="18" y="58" width="18" height="24" fill="#3E6C8F"/>' +
+      '<rect x="48" y="56" width="28" height="16" fill="#BEE0F0" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<path d="M92 82V60a10 10 0 0 1 20 0V82z" fill="#D64545"/>' +
+      '<rect x="96" y="60" width="12" height="3" rx="1.5" fill="' + DARK + '"/>' +
+      '<rect x="92" y="70" width="20" height="3" fill="#F2B632"/>'),
+
+    stazione: svg(SKY + GND +
+      '<rect x="0" y="22" width="120" height="5" fill="#5A6B7B"/>' +
+      '<rect x="12" y="27" width="3" height="50" fill="#5A6B7B"/><rect x="104" y="27" width="3" height="50" fill="#5A6B7B"/>' +
+      '<rect x="58" y="27" width="2" height="6" fill="#5A6B7B"/>' +
+      '<circle cx="59" cy="41" r="8" fill="#fff" stroke="' + DARK + '" stroke-width="2"/>' +
+      '<path d="M59 41v-5M59 41l4 2" stroke="' + DARK + '" stroke-width="1.6" stroke-linecap="round" fill="none"/>' +
+      '<rect x="18" y="48" width="92" height="28" rx="7" fill="#2A6FB8"/>' +
+      '<rect x="26" y="54" width="12" height="10" rx="1.5" fill="#fff"/><rect x="42" y="54" width="12" height="10" rx="1.5" fill="#fff"/><rect x="58" y="54" width="12" height="10" rx="1.5" fill="#fff"/>' +
+      '<rect x="76" y="52" width="14" height="24" fill="#DCEBF7"/><path d="M83 52v24" stroke="#2A6FB8" stroke-width="1.5"/>' +
+      '<rect x="94" y="54" width="12" height="10" rx="3" fill="#fff"/>' +
+      '<rect x="18" y="68" width="92" height="3" fill="#F2B632"/>' +
+      '<circle cx="34" cy="78" r="4.5" fill="' + DARK + '"/><circle cx="94" cy="78" r="4.5" fill="' + DARK + '"/>' +
+      '<rect x="0" y="82" width="120" height="2.5" fill="#6B7280"/>'),
+
+    parco: svg(SKY +
+      '<circle cx="94" cy="14" r="8" fill="#F2B632"/>' +
+      '<rect y="56" width="120" height="44" fill="#8CC084"/>' +
+      '<polygon points="52,100 60,56 72,56 88,100" fill="#E9D8A6"/>' +
+      '<rect x="18" y="40" width="6" height="30" fill="#8B5E3C"/>' +
+      '<circle cx="21" cy="32" r="15" fill="#4FA35C"/><circle cx="11" cy="42" r="10" fill="#5DB56A"/><circle cx="31" cy="42" r="10" fill="#5DB56A"/>' +
+      '<rect x="98" y="46" width="5" height="22" fill="#8B5E3C"/>' +
+      '<circle cx="100" cy="38" r="12" fill="#4FA35C"/><circle cx="92" cy="46" r="8" fill="#5DB56A"/><circle cx="108" cy="46" r="8" fill="#5DB56A"/>' +
+      '<rect x="34" y="70" width="20" height="3" fill="#8B5E3C"/><rect x="34" y="63" width="20" height="2.5" fill="#8B5E3C"/>' +
+      '<rect x="36" y="63" width="2" height="8" fill="#8B5E3C"/><rect x="50" y="63" width="2" height="8" fill="#8B5E3C"/>' +
+      '<rect x="36" y="73" width="2" height="6" fill="#6B4A30"/><rect x="50" y="73" width="2" height="6" fill="#6B4A30"/>' +
+      '<circle cx="12" cy="82" r="1.8" fill="#D64545"/><circle cx="26" cy="90" r="1.8" fill="#F2B632"/><circle cx="104" cy="84" r="1.8" fill="#F2B632"/><circle cx="112" cy="92" r="1.8" fill="#D64545"/>'),
+
+    bar: svg(SKY + GND +
+      '<rect x="8" y="36" width="78" height="46" fill="#F4D6A0"/>' +
+      '<rect x="24" y="16" width="48" height="18" rx="3" fill="#3E2F2A"/>' +
+      '<path d="M42 25h12v4a6 6 0 0 1-12 0z" fill="#fff"/>' +
+      '<path d="M54 26h2a2.8 2.8 0 0 1 0 5.6h-2" fill="none" stroke="#fff" stroke-width="1.4"/>' +
+      '<path d="M45 22q2-2 0-4M50 22q2-2 0-4" fill="none" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>' +
+      stripes(8, 36, 78, 10, 6, '#D64545', '#FFFFFF') +
+      '<rect x="14" y="54" width="30" height="24" fill="#BEE0F0" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<rect x="14" y="70" width="30" height="8" fill="#8B5E3C"/>' +
+      '<rect x="54" y="52" width="24" height="30" fill="#BEE0F0" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<rect x="92" y="70" width="22" height="3.5" rx="1.5" fill="#fff" stroke="' + DARK + '" stroke-width="1"/>' +
+      '<rect x="101" y="73.5" width="4" height="8.5" fill="' + DARK + '"/>' +
+      '<rect x="95" y="64" width="6" height="5.5" rx="1" fill="#fff" stroke="' + DARK + '" stroke-width="1"/>' +
+      '<rect x="106" y="64" width="6" height="5.5" rx="1" fill="#fff" stroke="' + DARK + '" stroke-width="1"/>'),
+
+    ristorante: svg(SKY + GND +
+      '<rect x="8" y="34" width="104" height="48" fill="#E9A98B"/>' +
+      '<rect x="59" y="32" width="2" height="4" fill="' + DARK + '"/>' +
+      '<circle cx="60" cy="19" r="13" fill="#fff" stroke="' + DARK + '" stroke-width="2"/>' +
+      '<path d="M50 11v6a3 3 0 0 0 6 0v-6M53 11v18" fill="none" stroke="' + DARK + '" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<path d="M66 11C71 14 71 21 66 24Z" fill="' + DARK + '"/><path d="M66 24v5" stroke="' + DARK + '" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<rect x="8" y="34" width="104" height="8" fill="#2E7D4F"/>' +
+      '<circle cx="14.5" cy="42" r="6.5" fill="#2E7D4F"/><circle cx="27.5" cy="42" r="6.5" fill="#2E7D4F"/><circle cx="40.5" cy="42" r="6.5" fill="#2E7D4F"/><circle cx="53.5" cy="42" r="6.5" fill="#2E7D4F"/><circle cx="66.5" cy="42" r="6.5" fill="#2E7D4F"/><circle cx="79.5" cy="42" r="6.5" fill="#2E7D4F"/><circle cx="92.5" cy="42" r="6.5" fill="#2E7D4F"/><circle cx="105.5" cy="42" r="6.5" fill="#2E7D4F"/>' +
+      '<rect x="16" y="52" width="54" height="26" fill="#FFE7A8" stroke="' + DARK + '" stroke-width="1.5"/>' +
+      '<rect x="24" y="64" width="38" height="3" fill="#fff"/><rect x="31" y="67" width="3" height="11" fill="' + DARK + '"/><rect x="52" y="67" width="3" height="11" fill="' + DARK + '"/>' +
+      '<ellipse cx="30" cy="62.5" rx="5" ry="1.6" fill="#fff" stroke="' + DARK + '" stroke-width=".8"/><ellipse cx="56" cy="62.5" rx="5" ry="1.6" fill="#fff" stroke="' + DARK + '" stroke-width=".8"/>' +
+      '<rect x="41.5" y="58" width="2.5" height="6" fill="#fff"/><circle cx="42.7" cy="56" r="1.7" fill="#F28C28"/>' +
+      '<rect x="78" y="48" width="24" height="34" fill="#5A3E2B"/><rect x="84" y="52" width="12" height="12" rx="6" fill="#FFE7A8"/>')
+  };
+  function pic(id) { return IMG[id]; }
+
+  /* ---------- Dati ---------- */
   var PLACES = [
-    { id: 'scuola', e: '🏫', a: 'LA', w: 'SCUOLA', blank: 'Gli studenti vanno a ___.', say: 'Gli studenti vanno a scuola.' },
-    { id: 'ospedale', e: '🏥', a: "L'", w: 'OSPEDALE', blank: "Il dottore lavora all'___.", say: "Il dottore lavora all'ospedale." },
-    { id: 'farmacia', e: '💊', a: 'LA', w: 'FARMACIA', blank: 'Compro le medicine in ___.', say: 'Compro le medicine in farmacia.' },
-    { id: 'supermercato', e: '🛒', a: 'IL', w: 'SUPERMERCATO', blank: 'Compro il pane al ___.', say: 'Compro il pane al supermercato.' },
-    { id: 'banca', e: '🏦', a: 'LA', w: 'BANCA', blank: 'Ritiro i soldi in ___.', say: 'Ritiro i soldi in banca.' },
-    { id: 'posta', e: '📮', a: 'LA', w: 'POSTA', blank: 'Spedisco una lettera alla ___.', say: 'Spedisco una lettera alla posta.' },
-    { id: 'stazione', e: '🚉', a: 'LA', w: 'STAZIONE', blank: 'Il treno arriva alla ___.', say: 'Il treno arriva alla stazione.' },
-    { id: 'parco', e: '🌳', a: 'IL', w: 'PARCO', blank: 'I bambini giocano nel ___.', say: 'I bambini giocano nel parco.' },
-    { id: 'bar', e: '☕', a: 'IL', w: 'BAR', blank: 'Bevo un caffè al ___.', say: 'Bevo un caffè al bar.', no: ['ristorante'] },
-    { id: 'ristorante', e: '🍽️', a: 'IL', w: 'RISTORANTE', blank: 'Mangio la pizza al ___.', say: 'Mangio la pizza al ristorante.', no: ['bar'] }
+    { id: 'scuola', a: 'LA', w: 'SCUOLA', blank: 'Gli studenti vanno a ___.', say: 'Gli studenti vanno a scuola.' },
+    { id: 'ospedale', a: "L'", w: 'OSPEDALE', blank: "Il dottore lavora all'___.", say: "Il dottore lavora all'ospedale." },
+    { id: 'farmacia', a: 'LA', w: 'FARMACIA', blank: 'Compro le medicine in ___.', say: 'Compro le medicine in farmacia.' },
+    { id: 'supermercato', a: 'IL', w: 'SUPERMERCATO', blank: 'Compro il pane al ___.', say: 'Compro il pane al supermercato.' },
+    { id: 'banca', a: 'LA', w: 'BANCA', blank: 'Ritiro i soldi in ___.', say: 'Ritiro i soldi in banca.' },
+    { id: 'posta', a: 'LA', w: 'POSTA', blank: 'Spedisco una lettera alla ___.', say: 'Spedisco una lettera alla posta.' },
+    { id: 'stazione', a: 'LA', w: 'STAZIONE', blank: 'Il treno arriva alla ___.', say: 'Il treno arriva alla stazione.' },
+    { id: 'parco', a: 'IL', w: 'PARCO', blank: 'I bambini giocano nel ___.', say: 'I bambini giocano nel parco.' },
+    { id: 'bar', a: 'IL', w: 'BAR', blank: 'Bevo un caffè al ___.', say: 'Bevo un caffè al bar.', no: ['ristorante'] },
+    { id: 'ristorante', a: 'IL', w: 'RISTORANTE', blank: 'Mangio la pizza al ___.', say: 'Mangio la pizza al ristorante.', no: ['bar'] }
   ];
   var SENTS = [
-    { e: '🏫', w: ['IO', 'VADO', 'A', 'SCUOLA'], end: '.', say: 'Io vado a scuola.' },
-    { e: '🌳', w: ['IO', 'VADO', 'AL', 'PARCO'], end: '.', say: 'Io vado al parco.' },
-    { e: '🏦', w: ['IO', 'VADO', 'IN', 'BANCA'], end: '.', say: 'Io vado in banca.' },
-    { e: '🚉', w: ["DOV'È", 'LA', 'STAZIONE'], end: '?', say: "Dov'è la stazione?" },
-    { e: '📮', w: ['LA', 'POSTA', 'È', 'QUI'], end: '.', say: 'La posta è qui.' },
-    { e: '☕', w: ['IL', 'BAR', 'È', 'A', 'DESTRA'], end: '.', say: 'Il bar è a destra.' },
-    { e: '💊', w: ['LA', 'FARMACIA', 'È', 'A', 'SINISTRA'], end: '.', say: 'La farmacia è a sinistra.' },
-    { e: '🏥', w: ["L'OSPEDALE", 'È', 'QUI'], end: '.', say: "L'ospedale è qui." },
-    { e: '🍽️', w: ['IL', 'RISTORANTE', 'È', 'QUI'], end: '.', say: 'Il ristorante è qui.' }
+    { pid: 'scuola', w: ['IO', 'VADO', 'A', 'SCUOLA'], end: '.', say: 'Io vado a scuola.' },
+    { pid: 'parco', w: ['IO', 'VADO', 'AL', 'PARCO'], end: '.', say: 'Io vado al parco.' },
+    { pid: 'banca', w: ['IO', 'VADO', 'IN', 'BANCA'], end: '.', say: 'Io vado in banca.' },
+    { pid: 'stazione', w: ["DOV'È", 'LA', 'STAZIONE'], end: '?', say: "Dov'è la stazione?" },
+    { pid: 'posta', w: ['LA', 'POSTA', 'È', 'QUI'], end: '.', say: 'La posta è qui.' },
+    { pid: 'bar', w: ['IL', 'BAR', 'È', 'A', 'DESTRA'], end: '.', say: 'Il bar è a destra.' },
+    { pid: 'farmacia', w: ['LA', 'FARMACIA', 'È', 'A', 'SINISTRA'], end: '.', say: 'La farmacia è a sinistra.' },
+    { pid: 'ospedale', w: ["L'OSPEDALE", 'È', 'QUI'], end: '.', say: "L'ospedale è qui." },
+    { pid: 'ristorante', w: ['IL', 'RISTORANTE', 'È', 'QUI'], end: '.', say: 'Il ristorante è qui.' }
   ];
   var OK = ['BRAVO!', 'MOLTO BENE!', 'GIUSTO!', 'PERFETTO!', 'OTTIMO!'];
-  var BAD = ['RIPROVA!', 'QUASI! RIPROVA!', 'ANCORA UNA VOLTA!'];
+  var BAD = ['RIPROVA!', 'QUASI! RIPROVA!', 'ANCORA!'];
 
   var byId = {};
   PLACES.forEach(function (p) { byId[p.id] = p; });
@@ -226,7 +412,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     })).slice(0, k);
   }
 
-  /* Audio: voce italiana del telefono */
+  /* ---------- Audio: voce italiana del telefono ---------- */
   function speak(text) {
     try {
       if (!('speechSynthesis' in window)) { document.getElementById('audioNote').hidden = false; return; }
@@ -236,7 +422,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
       u.rate = 0.8;
       var voices = window.speechSynthesis.getVoices() || [];
       for (var k = 0; k < voices.length; k++) {
-        if (voices[k].lang && voices[k].lang.toLowerCase().indexOf('it') === 0) { u.voice = voices[k]; break; }
+        if (voices[k].lang && voices[k].lang.toLowerCase().replace('_', '-').indexOf('it') === 0) { u.voice = voices[k]; break; }
       }
       window.speechSynthesis.speak(u);
     } catch (err) {
@@ -248,14 +434,14 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     var m = document.getElementById('msg');
     if (!m) return;
     m.className = 'msg' + (kind ? ' ' + kind : '');
-    m.innerHTML = kind ? '<span class="mi" aria-hidden="true">' + (kind === 'ok' ? '✓' : '✕') + '</span>' + text : '';
+    m.innerHTML = kind ? '<span class="mi" aria-hidden="true">' + (kind === 'ok' ? '✓' : '✕') + '</span><span>' + text + '</span>' : '';
   }
   function showNext() {
     var b = document.getElementById('nextBtn');
-    if (b) { b.hidden = false; }
+    if (b) b.hidden = false;
   }
   function stage() { return document.getElementById('stage'); }
-  function top() { try { window.scrollTo(0, 0); } catch (e) {} }
+  function toTop() { try { window.scrollTo(0, 0); } catch (e) {} }
 
   function shell(icon, text) {
     var dots = '';
@@ -266,17 +452,17 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
       '<div class="dots" aria-hidden="true">' + dots + '</div>' +
       '<p class="instr"><span class="ii" aria-hidden="true">' + icon + '</span><span>' + text + '</span></p>' +
       '<div id="stage" class="stage"></div>' +
-      '<div id="msg" class="msg" role="status" aria-live="polite"></div>' +
-      '<div class="foot"><button class="btn primary" id="nextBtn" data-a="next" hidden>AVANTI ➜</button></div>' +
+      '<div class="dock"><div id="msg" class="msg" role="status" aria-live="polite"></div>' +
+      '<button class="btn primary" id="nextBtn" data-a="next" hidden>AVANTI ➜</button></div>' +
       '</section>';
   }
 
-  /* Schermate */
+  /* ---------- Schermate ---------- */
   function showHome() {
     topBar.hidden = true;
     S.mode = null;
     app.innerHTML =
-      '<div class="brand" style="margin-bottom:4px"><div class="kicker">ITALIANO · A1</div><h1 style="font-size:2rem">I luoghi della città</h1></div>' +
+      '<div class="brand" style="margin-bottom:14px"><div class="kicker">ITALIANO · A1</div><h1 class="big">I luoghi della città</h1></div>' +
       '<ul class="menu">' +
       '<li><button class="sign alt" data-a="words"><span class="ico">📖</span><span class="lbl">PAROLE</span><span class="arr">➜</span></button></li>' +
       '<li><button class="sign" data-a="start" data-m="match"><span class="ico">🔗</span><span class="lbl">ABBINA</span><span class="arr">➜</span></button></li>' +
@@ -284,8 +470,8 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
       '<li><button class="sign" data-a="start" data-m="ordina"><span class="ico">🔀</span><span class="lbl">ORDINA</span><span class="arr">➜</span></button></li>' +
       '<li><button class="sign" data-a="start" data-m="ascolta"><span class="ico">🎧</span><span class="lbl">ASCOLTA</span><span class="arr">➜</span></button></li>' +
       '</ul>' +
-      '<p class="hint">🔊 Alza il volume</p>';
-    top();
+      '<p class="hint" style="margin-top:14px">🔊 Alza il volume</p>';
+    toTop();
   }
 
   function showWords() {
@@ -294,18 +480,18 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     app.innerHTML =
       '<section class="act"><p class="instr"><span class="ii" aria-hidden="true">👆</span><span>TOCCA E ASCOLTA</span></p>' +
       '<div class="words">' + PLACES.map(function (p) {
-        return '<button class="tile" data-a="wpick" data-id="' + p.id + '"><span class="emo">' + p.e + '</span><span>' + label(p) + '</span></button>';
+        return '<button class="tile" data-a="wpick" data-id="' + p.id + '">' + pic(p.id) + '<span>' + label(p) + '</span></button>';
       }).join('') + '</div></section>';
-    top();
+    toTop();
   }
 
   function startMode(m) {
     topBar.hidden = false;
     S.mode = m; S.i = 0;
     if (m === 'match') {
-      var ps = shuffle(PLACES).slice(0, 8);
-      S.rounds = [ps.slice(0, 4), ps.slice(4, 8)];
-      S.n = 2;
+      var ps = shuffle(PLACES).slice(0, 9);
+      S.rounds = [ps.slice(0, 3), ps.slice(3, 6), ps.slice(6, 9)];
+      S.n = 3;
     } else if (m === 'completa') {
       S.qs = shuffle(PLACES).slice(0, 6).map(function (p) {
         return { p: p, opts: shuffle([p].concat(distract(p, 2))) };
@@ -326,22 +512,22 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
   function showQ() {
     if (S.i >= S.n) { showDone(); return; }
     ({ match: showMatch, completa: showCompleta, ordina: showOrdina, ascolta: showAscolta })[S.mode]();
-    top();
+    toTop();
   }
 
   function showDone() {
     app.innerHTML =
       '<section class="done"><div class="party" aria-hidden="true">🎉</div><h2>BRAVO!</h2><p>HAI FINITO!</p>' +
-      '<div class="foot"><button class="btn primary" data-a="start" data-m="' + S.mode + '">🔁 ANCORA</button>' +
+      '<div class="btns"><button class="btn primary" data-a="start" data-m="' + S.mode + '">🔁 ANCORA</button>' +
       '<button class="btn" data-a="home">🏠 MENU</button></div></section>';
-    top();
+    toTop();
   }
 
-  /* ABBINA */
+  /* ---------- ABBINA ---------- */
   function showMatch() {
     var ps = S.rounds[S.i];
     S.m = { ps: ps, L: shuffle(ps), R: shuffle(ps), done: {}, count: 0, l: null, r: null, bad: false, lock: false };
-    app.innerHTML = shell('👆', "TOCCA L'IMMAGINE. TOCCA LA PAROLA.");
+    app.innerHTML = shell('👆', "TOCCA IL DISEGNO. TOCCA LA PAROLA.");
     paintMatch();
   }
   function paintMatch() {
@@ -350,7 +536,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
       var d = !!m.done[p.id];
       var sel = (side === 'l' ? m.l : m.r) === p.id;
       var cls = 'tile' + (d ? ' ok' : (sel ? (m.bad ? ' bad' : ' sel') : ''));
-      var inner = side === 'l' ? '<span class="emo">' + p.e + '</span>' : '<span class="wd">' + label(p) + '</span>';
+      var inner = side === 'l' ? '<span class="im">' + pic(p.id) + '</span>' : '<span class="wd">' + label(p) + '</span>';
       return '<button class="' + cls + '" data-a="mpick" data-side="' + side + '" data-id="' + p.id + '"' + (d ? ' disabled' : '') + '>' + inner + '</button>';
     }
     stage().innerHTML = '<div class="pairs"><div class="col">' + m.L.map(function (p) { return tile('l', p); }).join('') +
@@ -380,7 +566,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     }
   }
 
-  /* COMPLETA */
+  /* ---------- COMPLETA ---------- */
   function showCompleta() {
     S.c = { q: S.qs[S.i], wrong: {}, solved: false };
     app.innerHTML = shell('👆', 'SCEGLI LA PAROLA.');
@@ -391,7 +577,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     var parts = q.p.blank.split('___');
     var blank = c.solved ? '<span class="fill">' + q.p.w + '</span>' : '<span class="blank"></span>';
     stage().innerHTML =
-      '<div class="pic"><span class="emo big" aria-hidden="true">' + q.p.e + '</span>' +
+      '<div class="hero">' + pic(q.p.id) +
       '<button class="hear" data-a="hear" data-say="' + esc(q.p.say) + '" aria-label="Ascolta">🔊</button></div>' +
       '<p class="sent">' + parts[0] + blank + parts[1] + '</p>' +
       '<div class="opts">' + q.opts.map(function (o) {
@@ -409,7 +595,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     }
   }
 
-  /* ORDINA */
+  /* ---------- ORDINA ---------- */
   function showOrdina() {
     var s = S.qs[S.i];
     S.o = { s: s, chips: shuffle(s.w.map(function (w, i) { return { id: i, w: w }; })), placed: [], state: '' };
@@ -422,7 +608,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     var free = o.chips.filter(function (c) { return o.placed.indexOf(c.id) < 0; });
     var full = o.placed.length === o.chips.length;
     stage().innerHTML =
-      '<div class="pic"><span class="emo big" aria-hidden="true">' + o.s.e + '</span>' +
+      '<div class="hero small">' + pic(o.s.pid) +
       '<button class="hear" data-a="hear" data-say="' + esc(o.s.say) + '" aria-label="Ascolta">🔊</button></div>' +
       '<div class="line' + (o.state ? ' ' + o.state : '') + '">' +
       pl.map(function (c) {
@@ -458,11 +644,11 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     }
   }
 
-  /* ASCOLTA */
+  /* ---------- ASCOLTA ---------- */
   function sayText(q) { return q.type === 'w' ? label(q.p).toLowerCase() : q.p.say; }
   function showAscolta() {
     S.a = { q: S.qs[S.i], wrong: {}, solved: false };
-    app.innerHTML = shell('🔊', "ASCOLTA. TOCCA L'IMMAGINE.");
+    app.innerHTML = shell('🔊', "ASCOLTA. TOCCA IL DISEGNO.");
     paintAscolta();
     speak(sayText(S.a.q));
   }
@@ -473,7 +659,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
       '<p class="caption">' + (a.solved ? (q.type === 'w' ? label(q.p) : q.p.say) : '') + '</p>' +
       '<div class="grid2">' + q.opts.map(function (o) {
         var w = !!a.wrong[o.id], ok = a.solved && o.id === q.p.id;
-        return '<button class="tile opt' + (w ? ' bad' : '') + (ok ? ' ok' : '') + '" data-a="apick" data-id="' + o.id + '"' + ((w || a.solved) ? ' disabled' : '') + '><span class="emo" aria-hidden="true">' + o.e + '</span></button>';
+        return '<button class="tile opt' + (w ? ' bad' : '') + (ok ? ' ok' : '') + '" data-a="apick" data-id="' + o.id + '"' + ((w || a.solved) ? ' disabled' : '') + '>' + pic(o.id) + '</button>';
       }).join('') + '</div>';
   }
   function ascoltaPick(b) {
@@ -486,7 +672,7 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
     }
   }
 
-  /* Eventi */
+  /* ---------- Eventi ---------- */
   var H = {
     start: function (b) { startMode(b.dataset.m); },
     words: showWords,
@@ -516,3 +702,5 @@ button:focus-visible { outline: 4px solid var(--sign); outline-offset: 3px; }
   showHome();
 })();
 </script>
+</body>
+</html>
